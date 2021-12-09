@@ -172,6 +172,12 @@ func TestBasicReloadConfig(t *testing.T) {
 	})
 }
 
+func makeSimpleInMemSettings() settings.Settings {
+	s := defaultSettings()
+	s.BackendType = "inmem"
+	return s
+}
+
 func makeSimpleMemcacheSettings(memcachePorts []int, localCacheSize int) settings.Settings {
 	s := defaultSettings()
 	var memcacheHostAndPort []string
@@ -195,6 +201,13 @@ func TestBasicConfigMemcache(t *testing.T) {
 		cacheSettings.CacheKeyPrefix = "prefix:"
 		t.Run("MemcacheWithPrefix", testBasicConfig(cacheSettings))
 	})
+}
+
+func TestBasicConfigInMem(t *testing.T) {
+	t.Run("Inmem", testBasicConfig(makeSimpleInMemSettings()))
+	cacheSettings := makeSimpleInMemSettings()
+	cacheSettings.CacheKeyPrefix = "prefix:"
+	t.Run("InmemWithPrefix", testBasicConfig(cacheSettings))
 }
 
 func TestConfigMemcacheWithMaxIdleConns(t *testing.T) {

@@ -1,6 +1,7 @@
 package runner
 
 import (
+	"github.com/envoyproxy/ratelimit/src/inmem"
 	"io"
 	"math/rand"
 	"net/http"
@@ -61,6 +62,14 @@ func createLimiter(srv server.Server, s settings.Settings, localCache *freecache
 		)
 	case "memcache":
 		return memcached.NewRateLimitCacheImplFromSettings(
+			s,
+			utils.NewTimeSourceImpl(),
+			rand.New(utils.NewLockedSource(time.Now().Unix())),
+			localCache,
+			srv.Scope(),
+			statsManager)
+	case "inmem":
+		return inmem.NewRateLimiterCacheImplFromSettings(
 			s,
 			utils.NewTimeSourceImpl(),
 			rand.New(utils.NewLockedSource(time.Now().Unix())),
